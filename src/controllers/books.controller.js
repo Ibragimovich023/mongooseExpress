@@ -1,14 +1,5 @@
-import mongoose from 'mongoose'
+import Book from '../models/book.model.js'
 
-const bookSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  year: Number
-})
-
-const Book = mongoose.model('Book', bookSchema)
-
-// CREATE
 const createBook = async (req, res) => {
   try {
     const { title, author, year } = req.body
@@ -20,7 +11,6 @@ const createBook = async (req, res) => {
   }
 }
 
-// READ ALL
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find()
@@ -30,43 +20,33 @@ const getAllBooks = async (req, res) => {
   }
 }
 
-// READ ONE
 const getBookById = async (req, res) => {
   try {
     const id = req.params.id
     const book = await Book.findById(id)
-    if (!book) {
-      return res.status(404).json({ message: 'Book not found' })
-    }
+    if (!book) return res.status(404).json({ message: 'Book not found' })
     res.json(book)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 }
 
-// UPDATE
 const updateBook = async (req, res) => {
   try {
     const id = req.params.id
-    const { title, author, year } = req.body
-    const updated = await Book.findByIdAndUpdate(id, { title, author, year }, { new: true })
-    if (!updated) {
-      return res.status(404).json({ message: 'Book not found' })
-    }
+    const updated = await Book.findByIdAndUpdate(id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ message: 'Book not found' })
     res.json(updated)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 }
 
-// DELETE
 const deleteBook = async (req, res) => {
   try {
     const id = req.params.id
     const deleted = await Book.findByIdAndDelete(id)
-    if (!deleted) {
-      return res.status(404).json({ message: 'Book not found' })
-    }
+    if (!deleted) return res.status(404).json({ message: 'Book not found' })
     res.json({ message: 'Book deleted' })
   } catch (err) {
     res.status(500).json({ message: err.message })
